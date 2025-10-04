@@ -205,3 +205,15 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# colcon artifacts
+ros2_ws/install
+ros2_ws/log
+ros2_ws/build
+
+# python
+__pycache__/
+*.pyc
+
+# VSCode devcontainer (if you add it)
+.devcontainer/
