@@ -1,10 +1,10 @@
 # docker-compose.yml
 services:
   ros2:
-    image: osrf/ros:humble-desktop
-    #build:
-    #  context: .
-    #  dockerfile: Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: creativecamera:humble
     container_name: creativecamera_ros2
     working_dir: /ws
     stdin_open: true
@@ -23,3 +23,4 @@ services:
     ports:
       - "8765:8765"
     command: bash
+

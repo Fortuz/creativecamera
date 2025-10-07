@@ -1,4 +1,4 @@
-ei_fetcher:
+ball_tracker_rgb:
   ros__parameters:
     image_topic: "/camera/image_raw"
     camera_info_topic: "/camera/camera_info"

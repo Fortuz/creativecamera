@@ -42,7 +42,9 @@ class BallTrackerRGB(Node):
         mask = cv2.medianBlur(mask, 5)
 
         # publish binary mask so you can tune HSV in Foxglove
-        self.pub_mask.publish(self.bridge.cv2_to_imgmsg(mask, encoding='mono8'))
+        mask_msg = self.bridge.cv2_to_imgmsg(mask, encoding='mono8')
+        mask_msg.header = img_msg.header
+        self.pub_mask.publish(mask_msg)
 
         contours,_ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -74,9 +76,13 @@ class BallTrackerRGB(Node):
             cv2.circle(img, (int(cx),int(cy)), 3, (0,0,255), -1)
 
         self.pub_det.publish(dets)
-        self.pub_dbg.publish(self.bridge.cv2_to_imgmsg(img, 'bgr8'))
+        dbg_msg = self.bridge.cv2_to_imgmsg(img, 'bgr8')
+        dbg_msg.header = img_msg.header
+        self.pub_dbg.publish(dbg_msg)
 
 def main():
     rclpy.init()
     rclpy.spin(BallTrackerRGB())
     rclpy.shutdown()
+
+

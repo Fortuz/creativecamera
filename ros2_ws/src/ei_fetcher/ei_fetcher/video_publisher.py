@@ -21,7 +21,7 @@ class VideoPublisher(Node):
     def tick(self):
         ok, frame = self.cap.read()
         if not ok:
-            self.get_logger().info("End of video—looping.")
+            self.get_logger().info("End of video; looping.")
             self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
             return
         msg = self.bridge.cv2_to_imgmsg(frame, encoding='bgr8')

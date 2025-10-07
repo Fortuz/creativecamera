@@ -39,8 +39,8 @@ class DetectionOverlay(Node):
         if dets and dets.detections:
             for d in dets.detections:
                 # Detection2D bbox is center (x,y) + size (w,h)
-                cx = d.bbox.center.x
-                cy = d.bbox.center.y
+                cx = d.bbox.center.position.x
+                cy = d.bbox.center.position.y
                 w  = d.bbox.size_x
                 h  = d.bbox.size_y
                 x1 = int(cx - w/2); y1 = int(cy - h/2)
