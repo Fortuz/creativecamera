@@ -1,4 +1,4 @@
-# docker-compose.yml
+﻿# docker-compose.yml
 services:
   ros2:
     build:
@@ -12,6 +12,7 @@ services:
     # A jelenlegi mappát csatoljuk be /ws alá
     volumes:
       - ./ros2_ws:/ws/ros2_ws
+      - ./ros2_ws/models:/ws/ros2_ws/models
       - /tmp/.X11-unix:/tmp/.X11-unix:rw   # Linux X11
     environment:
       # Ha több ROS rendszered van a hálózaton, állíts külön domain ID-t (pl. 42).

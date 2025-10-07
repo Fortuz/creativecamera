@@ -7,16 +7,19 @@ ball_tracker_rgb:
     hsv_upper: [45, 255, 255]
     min_area_px: 80
     det_ball_topic: "/detections/ball"
-    debug_image_topic: "/image_debug"
+    debug_image_topic: "/camera/image_debug"
+    mask_image_topic: "/camera/image_mask"
 
 people_detector:
   ros__parameters:
     image_topic: "/camera/image_raw"
     camera_info_topic: "/camera/camera_info"
+    ann_topic: /camera/annotations
+    people_debug_topic: /camera/people_debug
     det_topic: "/detections/person"
-    model_path: ""            # path to a tiny YOLO .onnx (optional)
+    model_path: "/ws/ros2_ws/models/yolov8n.onnx"  # <— inside the container
     input_size: [640, 640]
-    conf_threshold: 0.3
+    conf_threshold: 0.25
     iou_threshold: 0.45
     infer_every_n: 2
     person_class_ids: [0]
