@@ -3,12 +3,18 @@ from launch.actions import DeclareLaunchArgument
 from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+from launch.substitutions import PathJoinSubstitution
+from launch_ros.parameter_descriptions import ParameterFile
 from ament_index_python.packages import get_package_share_directory
 import os
 
 def generate_launch_description():
     pkg_share = get_package_share_directory('ei_fetcher')
-    params_file = os.path.join(pkg_share, 'config', 'params.yaml')
+    #params_file = os.path.join(pkg_share, 'config', 'params.yaml')
+    params = ParameterFile(
+        PathJoinSubstitution([pkg_share, 'config', 'params.yaml']),
+        allow_substs=True
+    )
 
     use_video = LaunchConfiguration('use_video')
     video_path = LaunchConfiguration('video_path')
@@ -45,13 +51,13 @@ def generate_launch_description():
             executable='ball_tracker_rgb',
             name='ball_tracker_rgb',
             output='screen',
-            parameters=[params_file]
+            parameters=[params]
         ),
         Node(
             package='ei_fetcher',
             executable='people_detector',
             name='people_detector',
             output='screen',
-            parameters=[params_file]
+            parameters=[params]
         ),
     ])

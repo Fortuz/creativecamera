@@ -21,6 +21,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg libsm6 libxext6 libgl1 libglib2.0-0 \
  && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-humble-foxglove-msgs && rm -rf /var/lib/apt/lists/*
+
 # ===== Takarítás: az apt-os sympy eltávolítása (ütközik a Torch-csal) =======
 RUN apt-get update && apt-get purge -y python3-sympy || true \
  && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*

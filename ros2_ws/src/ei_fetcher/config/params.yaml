@@ -15,9 +15,9 @@ people_detector:
     image_topic: "/camera/image_raw"
     camera_info_topic: "/camera/camera_info"
     det_topic: "/detections/person"
-    model_path: ""            # path to a tiny YOLO .onnx (optional)
+    model_path: "/ws/ros2_ws/models/yolov8n.onnx"  # <— inside the container
     input_size: [640, 640]
-    conf_threshold: 0.3
+    conf_threshold: 0.25
     iou_threshold: 0.45
     infer_every_n: 2
     person_class_ids: [0]
