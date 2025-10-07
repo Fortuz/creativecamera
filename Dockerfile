@@ -16,7 +16,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Python dependencies (ultralytics optional but useful for model export)
 RUN pip3 install --no-cache-dir --upgrade pip
 RUN pip3 install --no-cache-dir "numpy==1.26.4"
-RUN pip3 install --no-cache-dir onnxruntime ultralytics
+RUN pip3 install --no-cache-dir onnxruntime
+RUN pip3 install --no-cache-dir ultralytics
 
 # Workspace mount point
 WORKDIR /ws
