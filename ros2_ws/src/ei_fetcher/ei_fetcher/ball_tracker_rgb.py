@@ -15,19 +15,28 @@ class BallTrackerRGB(Node):
             ('hsv_upper', [45, 255, 255]),
             ('min_area_px', 80),
             ('det_ball_topic', '/detections/ball'),
-            ('debug_image_topic', '/image_debug'),
+            ('debug_image_topic', '/camera/image_debug'),
+            ('mask_image_topic', '/camera/image_mask'),
         ])
         vals = [p.value for p in self.get_parameters([
-            'image_topic','camera_info_topic','hsv_lower','hsv_upper','min_area_px','det_ball_topic','debug_image_topic'
+            'image_topic',
+            'camera_info_topic',
+            'hsv_lower',
+            'hsv_upper',
+            'min_area_px',
+            'det_ball_topic',
+            'debug_image_topic',
+            'mask_image_topic',
         ])]
-        (self.image_topic, info_topic, hsv_l, hsv_u, self.min_area, det_topic, dbg_topic) = vals
+        (self.image_topic, info_topic, hsv_l, hsv_u, self.min_area, det_topic, dbg_topic, mask_topic) = vals
 
         self.bridge = CvBridge()
         self.create_subscription(CameraInfo, info_topic, self.on_info, 10)
         self.create_subscription(Image, self.image_topic, self.on_image, 10)
         self.pub_det = self.create_publisher(Detection2DArray, det_topic, 10)
         self.pub_dbg = self.create_publisher(Image, dbg_topic, 10)
-        self.pub_mask = self.create_publisher(Image, '/image_mask', 10)  # NEW
+        self.pub_mask = self.create_publisher(Image, mask_topic, 10)
+        self.get_logger().info(f'Ball tracker publishing debug={dbg_topic} mask={mask_topic}')
 
         self.hsv_lower = np.array(hsv_l, dtype=np.uint8)
         self.hsv_upper = np.array(hsv_u, dtype=np.uint8)
@@ -84,5 +93,4 @@ def main():
     rclpy.init()
     rclpy.spin(BallTrackerRGB())
     rclpy.shutdown()
-
 

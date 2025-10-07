@@ -7,7 +7,8 @@ ball_tracker_rgb:
     hsv_upper: [45, 255, 255]
     min_area_px: 80
     det_ball_topic: "/detections/ball"
-    debug_image_topic: "/image_debug"
+    debug_image_topic: "/camera/image_debug"
+    mask_image_topic: "/camera/image_mask"
 
 people_detector:
   ros__parameters:

@@ -9,12 +9,12 @@ Baseline perception package for the Mecanumbot project.
 - Tennis ball detection (HSV) publishes `vision_msgs/Detection2DArray` on `/detections/ball`
 - People detector (YOLO ONNXRuntime, optional) publishes `/detections/person`
 - Video source: either external USB camera (`v4l2_camera`) or a file-based video publisher node
-- Debug outputs on `/image_debug` and `/image_mask`
+- Debug outputs on `/camera/image_debug` and `/camera/image_mask`
 
 ## Nodes & Topics
 - `ball_tracker_rgb`
   - Sub: `/camera/image_raw`, `/camera/camera_info`
-  - Pub: `/detections/ball`, `/image_debug`, `/image_mask`
+  - Pub: `/detections/ball`, `/camera/image_debug`, `/camera/image_mask`
 - `people_detector`
   - Sub: `/camera/image_raw`, `/camera/camera_info`
   - Pub: `/detections/person`
@@ -38,7 +38,7 @@ docker compose exec ros2 bash -lc "source /opt/ros/humble/setup.bash && source /
 ## Useful commands
 - Inspect frame rates: `ros2 topic hz /camera/image_raw`
 - Check detections: `ros2 topic echo /detections/ball`
-- Visualize overlays: `ros2 run image_view image_view --ros-args -r image:=/image_debug`
+- Visualize overlays: `ros2 run image_view image_view --ros-args -r image:=/camera/image_debug`
 - Start Foxglove bridge: `ros2 launch foxglove_bridge foxglove_bridge_launch.xml port:=8765`
 
 ## Development
@@ -53,4 +53,4 @@ docker compose exec ros2 bash -lc "rm -rf /ws/ros2_ws/build /ws/ros2_ws/install 
 
 Troubleshooting tips:
 - If `onnxruntime` warns about GPU discovery, it is safe to ignore when running on CPU-only hosts.
-- When tuning HSV thresholds, monitor `/image_mask` in Foxglove or `image_view` to see the binary mask.
+- When tuning HSV thresholds, monitor `/camera/image_mask` in Foxglove or `image_view` to see the binary mask.
