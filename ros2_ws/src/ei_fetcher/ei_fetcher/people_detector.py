@@ -82,6 +82,11 @@ class PeopleDetector(Node):
         self.ann_topic = self.declare_parameter('ann_topic', '/camera/annotations').get_parameter_value().string_value
         self.pub_ann = self.create_publisher(ImageAnnotations, self.ann_topic, 10)
 
+        self.debug_topic = self.declare_parameter(
+            'people_debug_topic', '/camera/people_debug'
+        ).get_parameter_value().string_value
+        self.pub_dbg = self.create_publisher(Image, self.debug_topic, 10)
+
         # cv_bridge
         self.bridge = CvBridge()
 
@@ -266,6 +271,24 @@ class PeopleDetector(Node):
                 hyp.hypothesis.score = float(scores[i])
                 d.results.append(hyp)
                 dets.detections.append(d)
+
+        # Draw boxes on the original image and publish a debug image
+        dbg = img.copy()
+        for d in dets.detections:
+            x = int(d.bbox.center.position.x - 0.5 * d.bbox.size_x)
+            y = int(d.bbox.center.position.y - 0.5 * d.bbox.size_y)
+            w = int(d.bbox.size_x)
+            h = int(d.bbox.size_y)
+            cv2.rectangle(dbg, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            if d.results:
+                label = f"{d.results[0].hypothesis.class_id} {d.results[0].hypothesis.score:.2f}"
+                cv2.putText(dbg, label, (x, max(0, y - 5)),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
+
+        dbg_msg = self.bridge.cv2_to_imgmsg(dbg, encoding='bgr8')
+        dbg_msg.header.stamp = dets.header.stamp
+        dbg_msg.header.frame_id = dets.header.frame_id
+        self.pub_dbg.publish(dbg_msg)
 
         self.pub_det.publish(dets)
 

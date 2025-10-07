@@ -14,6 +14,8 @@ people_detector:
   ros__parameters:
     image_topic: "/camera/image_raw"
     camera_info_topic: "/camera/camera_info"
+    ann_topic: /camera/annotations
+    people_debug_topic: /camera/people_debug
     det_topic: "/detections/person"
     model_path: "/ws/ros2_ws/models/yolov8n.onnx"  # <— inside the container
     input_size: [640, 640]
