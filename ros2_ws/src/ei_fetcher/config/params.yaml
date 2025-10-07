@@ -23,3 +23,10 @@ people_detector:
     iou_threshold: 0.45
     infer_every_n: 2
     person_class_ids: [0]
+
+overlay_fused:
+  ros__parameters:
+    image_topic: /camera/image_raw
+    person_det_topic: /detections/person
+    ball_det_topic: /detections/ball
+    out_topic: /camera/fused_debug

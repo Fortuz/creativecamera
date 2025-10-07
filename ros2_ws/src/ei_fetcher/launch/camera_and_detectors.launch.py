@@ -60,4 +60,13 @@ def generate_launch_description():
             output='screen',
             parameters=[params]
         ),
+
+        # Fused overlay
+        Node(
+            package='ei_fetcher',
+            executable='overlay_fused',
+            name='overlay_fused',
+            output='screen',
+            parameters=[params],   # reuse your params.yaml (optional)
+        )
     ])

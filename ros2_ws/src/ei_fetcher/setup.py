@@ -25,6 +25,7 @@ setup(
             'people_detector = ei_fetcher.people_detector:main',
             'video_publisher = ei_fetcher.video_publisher:main',
             'detection_overlay = ei_fetcher.detection_overlay:main',
+            'overlay_fused   = ei_fetcher.overlay_fused:main', 
         ],
     },
 )
