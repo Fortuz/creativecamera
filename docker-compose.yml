@@ -1,4 +1,4 @@
-﻿# docker-compose.yml
+# docker-compose.yml
 services:
   ros2:
     build:
@@ -9,19 +9,20 @@ services:
     working_dir: /ws
     stdin_open: true
     tty: true
-    # A jelenlegi mappát csatoljuk be /ws alá
+    # Mount the current workspace under /ws
     volumes:
       - ./ros2_ws:/ws/ros2_ws
       - ./ros2_ws/models:/ws/ros2_ws/models
       - /tmp/.X11-unix:/tmp/.X11-unix:rw   # Linux X11
     environment:
-      # Ha több ROS rendszered van a hálózaton, állíts külön domain ID-t (pl. 42).
+      # Adjust the domain ID if you share the network with other ROS graphs.
       - ROS_DOMAIN_ID=0
-      # Ha GUI-t is szeretnél később (WSLg / X11), majd tedd hozzá:
+      # For GUI forwarding (WSLg / X11) set the display variables.
       - DISPLAY=host.docker.internal:0.0
       - QT_X11_NO_MITSHM=1
       - LIBGL_ALWAYS_INDIRECT=1
     ports:
       - "8765:8765"
     command: bash
+
 

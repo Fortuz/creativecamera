@@ -1,15 +1,15 @@
-﻿# ===== Base image ============================================================
+# ===== Base image ============================================================
 FROM osrf/ros:humble-desktop
 
-# Kényelmi env + noninteractive apt
+# Convenience env vars + noninteractive apt
 ENV DEBIAN_FRONTEND=noninteractive \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1 \
     PYTHONDONTWRITEBYTECODE=1
 
 # ===== System deps (ROS + runtime libs) =====================================
-# NOTE: szándékosan NEM telepítünk apt-ból python3-opencv, python3-numpy-t
-# hogy ne keveredjenek a pip-es csomagokkal.
+# NOTE: intentionally do not install python3-opencv/python3-numpy via apt
+# to avoid mixing them with the pip-installed packages.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-pip \
     ros-humble-vision-msgs \
@@ -24,30 +24,30 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-humble-foxglove-msgs && rm -rf /var/lib/apt/lists/*
 
-# ===== Takarítás: az apt-os sympy eltávolítása (ütközik a Torch-csal) =======
+# ===== Cleanup: remove apt sympy (conflicts with Torch) ======================
 RUN apt-get update && apt-get purge -y python3-sympy || true \
  && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
-# ===== Pip alapok ===========================================================
+# ===== Pip basics ============================================================
 RUN python3 -m pip install --upgrade pip
 
-# ===== Pinned NumPy + OpenCV (cv_bridge kompatibilis) =======================
-# OpenCV wheel 4.9.0.80 jól működik NumPy 1.26.4-gyel és Ultralytics-szel is.
+# ===== Pinned NumPy + OpenCV (cv_bridge compatible) ==========================
+# OpenCV wheel 4.9.0.80 works well with NumPy 1.26.4 and Ultralytics.
 RUN python3 -m pip install --no-cache-dir \
     "numpy==1.26.4" "opencv-python-headless==4.9.0.80"
 
-# ===== PyTorch CPU (x86_64, CUDA nélkül) ====================================
-# Ha ARM-ra célzol, buildx-szel állíts platformot, vagy használj ARM-kompatibilis wheel-t.
+# ===== PyTorch CPU (x86_64, no CUDA) ========================================
+# If you target ARM, set the platform via buildx or install an ARM wheel.
 RUN python3 -m pip install --no-cache-dir \
     --index-url https://download.pytorch.org/whl/cpu \
     torch torchvision torchaudio
 
 # ===== ONNX Runtime + Ultralytics ===========================================
-# Az --upgrade-strategy only-if-needed visszafogja a felülírásokat.
+# The --upgrade-strategy only-if-needed avoids unnecessary upgrades.
 RUN python3 -m pip install --no-cache-dir --upgrade-strategy only-if-needed \
     onnxruntime ultralytics
 
-# ===== Végső “guard”: tartsuk lent a NumPy-t és az OpenCV-t ================
+# ===== Final guard: keep NumPy and OpenCV pinned =============================
 RUN python3 -m pip install --no-cache-dir --force-reinstall \
     "numpy==1.26.4" "opencv-python-headless==4.9.0.80"
 
@@ -55,5 +55,5 @@ RUN python3 -m pip install --no-cache-dir --force-reinstall \
 WORKDIR /ws
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
 
-# Hasznos, ha Foxglove-ot a konténerből indítod:
+# Expose Foxglove bridge when launching it from inside the container
 EXPOSE 8765
