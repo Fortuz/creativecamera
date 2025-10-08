@@ -3,9 +3,9 @@ ball_tracker_rgb:
     image_topic: "/camera/image_raw"
     camera_info_topic: "/camera/camera_info"
     # Tennis ball HSV (tune later to your lighting/ball)
-    hsv_lower: [25, 140, 140]
+    hsv_lower: [25, 120, 120]
     hsv_upper: [45, 255, 255]
-    min_area_px: 80
+    min_area_px: 150
     det_ball_topic: "/detections/ball"
     debug_image_topic: "/camera/image_debug"
     mask_image_topic: "/camera/image_mask"
