@@ -4,6 +4,9 @@ Containerised ROS 2 Humble workspace for the Creative Room camera project. The s
 
 ## Prerequisites
 - Docker Desktop with Compose v2
+  - On Windows, install WSL 2 (run `wsl --install`), enable the Windows "Virtual Machine Platform" feature, and ensure hardware virtualization is enabled in BIOS/UEFI.
+  - In Docker Desktop settings, enable "Use the WSL 2 based engine" and share the drive that contains this repository.
+  - Restart Docker Desktop after installation and verify `docker version` and `docker compose version` run without errors.
 - Optional: a webcam exposed as /dev/video0 for live capture
 - Optional: Foxglove Studio for visualisation
 
@@ -77,3 +80,4 @@ rm -rf /ws/ros2_ws/build /ws/ros2_ws/install /ws/ros2_ws/log && colcon build
 
 ## License
 MIT License. See `LICENSE` for the full text.
+
