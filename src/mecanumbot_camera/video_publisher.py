@@ -16,7 +16,7 @@ class VideoPublisher(Node):
         self.camera_info_topic = self.get_parameter('camera_info_topic').get_parameter_value().string_value
         self.frame_id = self.get_parameter('frame_id').get_parameter_value().string_value
 
-        self.declare_parameter('video_path', '/ws/mecanumbot_camera/media/sample.mp4')
+        self.declare_parameter('video_path', '/ws/mecanumbot_camera/src/mecanumbot_camera/media/sample.mp4')
         self.video_path = self.get_parameter('video_path').value
         self.cap = cv2.VideoCapture(self.video_path)
         if not self.cap.isOpened():
