@@ -22,7 +22,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         DeclareLaunchArgument('use_video', default_value='true'),
-        DeclareLaunchArgument('model_path', default_value='/ws/mecanumbot_camera/models/yolo.onnx'),
+        DeclareLaunchArgument('model_path', default_value='/ws/mecanumbot_camera/models/yolov8n.onnx'),
         DeclareLaunchArgument('video_path', default_value='/ws/mecanumbot_camera/media/sample.mp4'),
         DeclareLaunchArgument('video_device', default_value='/dev/video0'),
 
@@ -59,7 +59,7 @@ def generate_launch_description():
             executable='people_detector',
             name='people_detector',
             output='screen',
-            parameters=[params]
+            parameters=[params, {'model_path': LaunchConfiguration('model_path')}]
         ),
 
         # Fused overlay
