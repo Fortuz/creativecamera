@@ -211,6 +211,9 @@ install
 log
 build
 
+# media
+media
+
 # python
 __pycache__/
 *.pyc
