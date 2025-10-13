@@ -13,11 +13,12 @@ Containerised ROS 2 Humble workspace for the Creative Room camera project. The s
 ## Nodes and Topics
 | Node | Type | Subscriptions | Publications | Notes |
 | --- | --- | --- | --- | --- |
-| `video_publisher` | Python | (none) | `/camera/image_raw` | Streams a video file (default media/sample.mp4) when use_video:=true |
-| `v4l2_camera_node` | C++ (external) | (none) | `/camera/image_raw`, `/camera/camera_info` | Starts when use_video:=false and a V4L2 device is available |
-| `ball_tracker_rgb` | Python | `/camera/image_raw`, `/camera/camera_info` | `/detections/ball`, `/camera/image_debug`, `/camera/image_mask` | HSV segmentation; debug image shows bounding boxes, mask is mono8 |
-| `people_detector` | Python | `/camera/image_raw`, `/camera/camera_info` | `/detections/person` | Provide a YOLO .onnx model path for detections |
-| `detection_overlay` | Python | `/camera/image_raw`, `/detections/person` | `/image_people_debug` | Optional overlay of people detections on RGB frames |
+| `video_publisher` | Python | (none) | `/camera/image_raw`, `/camera/camera_info` | Streams a video file (default `mecanumbot_camera/media/sample.mp4`) when `use_video:=true`; publishes a synthetic `CameraInfo`. |
+| `v4l2_camera_node` | C++ (external) | (none) | `/camera/image_raw`, `/camera/camera_info` | Starts when `use_video:=false` and the host exposes a V4L2 device. |
+| `ball_tracker_rgb` | Python | `/camera/image_raw`, `/camera/camera_info` | `/detections/ball`, `/camera/image_debug`, `/camera/image_mask` | HSV segmentation with tunable morphology, circularity, and blur filters. |
+| `people_detector` | Python | `/camera/image_raw`, `/camera/camera_info` | `/detections/person`, `/camera/annotations`, `/camera/people_debug` | Runs a YOLO ONNX model via ONNX Runtime and publishes Foxglove annotations plus a debug image. |
+| `overlay_fused` | Python | `/camera/image_raw`, `/detections/person`, `/detections/ball` | `/camera/fused_debug` | Combines ball and people detections into a single debug image (enabled by default). |
+| `detection_overlay` | Python (optional) | `/camera/image_raw`, `/detections/person` | `/image_people_debug` | Legacy overlay retained for reference; disable `overlay_fused` if you prefer it. |
 
 ## Quick Start
 ```bash
@@ -38,20 +39,24 @@ docker compose exec ros2 bash -lc "source /opt/ros/humble/setup.bash && source /
 
 ## Visualisation
 - Bridge to Foxglove Studio: `ros2 launch foxglove_bridge foxglove_bridge_launch.xml port:=8765`
-- In Foxglove, connect to `ws://localhost:8765` and look for `/camera/image_raw`, `/camera/image_debug`, `/camera/image_mask`, `/detections/ball`, and `/detections/person`
+- In Foxglove, connect to `ws://localhost:8765` and look for `/camera/image_raw`, `/camera/image_debug`, `/camera/image_mask`, `/camera/people_debug`, `/camera/fused_debug`, `/camera/annotations`, `/detections/ball`, and `/detections/person`
 - Helpful CLI commands:
   - `ros2 topic hz /camera/image_raw`
   - `ros2 topic echo /detections/ball`
   - `ros2 topic echo /detections/person`
+  - `ros2 topic echo /camera/annotations`
 
 ## Configuration
 Runtime parameters live in `mecanumbot_camera/config/params.yaml`:
-- `ball_tracker_rgb` parameters cover HSV bounds, minimum contour area, and topic names (`debug_image_topic`, `mask_image_topic`)
-- `people_detector` expects `model_path` to point at a YOLO ONNX file; adjust `input_size`, `conf_threshold`, `iou_threshold`, and `infer_every_n` to suit your model and hardware
+- `ball_tracker_rgb` covers HSV bounds, minimum contour area, optional circularity filtering (`min_circularity`), morphology controls (`morph_kernel`, `morph_iters`), median blur (`median_ksize`), whether to use an enclosing circle, and the debug/mask topics.
+- `people_detector` sets the ONNX `model_path` (defaults to `mecanumbot_camera/models/yolov8n.onnx`), `input_size`, thresholds, inference stride (`infer_every_n`), class IDs, and debug outputs (`ann_topic`, `people_debug_topic`).
+- `overlay_fused` selects the detection topics to merge and the fused debug topic.
 
 To try one-off overrides without editing the file:
 ```bash
 ros2 run mecanumbot_camera ball_tracker_rgb --ros-args -p hsv_lower:="[30, 120, 120]" -p hsv_upper:="[52, 255, 255]"
+# Example: point the people detector at a different ONNX file
+ros2 run mecanumbot_camera people_detector --ros-args -p model_path:=/ws/mecanumbot_camera/models/your_model.onnx -p infer_every_n:=1
 ```
 
 ## Development Workflow
@@ -67,16 +72,16 @@ rm -rf /ws/mecanumbot_camera/build /ws/mecanumbot_camera/install /ws/mecanumbot_
 
 ## Troubleshooting
 - **Debug topics missing**: ensure `ball_tracker_rgb` started (`ros2 topic list` should include `/camera/image_debug` and `/camera/image_mask`). If not, inspect `/ws/mecanumbot_camera/log/latest/ball_tracker_rgb-*/stderr.log`.
-- **No people detections**: set `-p model_path:=/ws/mecanumbot_camera/models/person.onnx` (or similar) when launching so the ONNX model loads.
-- **Installing extra Python packages**: keep `numpy<2` (`numpy==1.26.4` is pre-installed for `cv_bridge` compatibility`).
+- **No people detections**: ensure `people_detector` has a valid ONNX path, e.g. `ros2 run mecanumbot_camera people_detector --ros-args -p model_path:=/ws/mecanumbot_camera/models/yolov8n.onnx`.
+- **Installing extra Python packages**: keep `numpy<2` (`numpy==1.26.4` is pre-installed for `cv_bridge` compatibility).
 - **Foxglove cannot connect**: confirm port `8765` is exposed in `docker-compose.yml` and that the container is running `foxglove_bridge`.
 
 ## Repository Layout
 - `docker-compose.yml`: Compose service definition
 - `Dockerfile`: ROS 2 Humble base with OpenCV, ONNXRuntime, PyTorch, and Ultralytics
-- `mecanumbot_camera`: Source code, launch files, and configuration
-- `media/`: Demo video assets
-- `models/`: Place ONNX models here and mount into the container
+- `mecanumbot_camera/`: ROS 2 package sources, launch files, configuration, and assets
+- `mecanumbot_camera/media/`: Demo video assets
+- `mecanumbot_camera/models/`: Default YOLO ONNX models
 
 ## License
 Apache 2.0 License. See `LICENSE` for the full text.
