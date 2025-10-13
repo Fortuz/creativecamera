@@ -45,7 +45,7 @@ docker compose exec ros2 bash -lc "source /opt/ros/humble/setup.bash && source /
   - `ros2 topic echo /detections/person`
 
 ## Configuration
-Runtime parameters live in `mecanumbot_camera/src/mecanumbot_camera/config/params.yaml`:
+Runtime parameters live in `mecanumbot_camera/config/params.yaml`:
 - `ball_tracker_rgb` parameters cover HSV bounds, minimum contour area, and topic names (`debug_image_topic`, `mask_image_topic`)
 - `people_detector` expects `model_path` to point at a YOLO ONNX file; adjust `input_size`, `conf_threshold`, `iou_threshold`, and `infer_every_n` to suit your model and hardware
 
@@ -74,7 +74,7 @@ rm -rf /ws/mecanumbot_camera/build /ws/mecanumbot_camera/install /ws/mecanumbot_
 ## Repository Layout
 - `docker-compose.yml`: Compose service definition
 - `Dockerfile`: ROS 2 Humble base with OpenCV, ONNXRuntime, PyTorch, and Ultralytics
-- `mecanumbot_camera/src/mecanumbot_camera`: Source code, launch files, and configuration
+- `mecanumbot_camera`: Source code, launch files, and configuration
 - `media/`: Demo video assets
 - `models/`: Place ONNX models here and mount into the container
 

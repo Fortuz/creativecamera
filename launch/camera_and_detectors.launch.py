@@ -22,8 +22,8 @@ def generate_launch_description():
 
     return LaunchDescription([
         DeclareLaunchArgument('use_video', default_value='true'),
-        DeclareLaunchArgument('model_path', default_value='/ws/mecanumbot_camera/src/mecanumbot_camera/models/yolo.onnx'),
-        DeclareLaunchArgument('video_path', default_value='/ws/mecanumbot_camera/src/mecanumbot_camera/media/sample.mp4'),
+        DeclareLaunchArgument('model_path', default_value='/ws/mecanumbot_camera/models/yolo.onnx'),
+        DeclareLaunchArgument('video_path', default_value='/ws/mecanumbot_camera/media/sample.mp4'),
         DeclareLaunchArgument('video_device', default_value='/dev/video0'),
 
         # Video file source
