@@ -9,7 +9,7 @@ from ament_index_python.packages import get_package_share_directory
 import os
 
 def generate_launch_description():
-    pkg_share = get_package_share_directory('ei_fetcher')
+    pkg_share = get_package_share_directory('mecanumbot_camera')
     #params_file = os.path.join(pkg_share, 'config', 'params.yaml')
     params = ParameterFile(
         PathJoinSubstitution([pkg_share, 'config', 'params.yaml']),
@@ -22,12 +22,13 @@ def generate_launch_description():
 
     return LaunchDescription([
         DeclareLaunchArgument('use_video', default_value='true'),
-        DeclareLaunchArgument('video_path', default_value='/ws/ros2_ws/media/sample.mp4'),
+        DeclareLaunchArgument('model_path', default_value='/ws/models/yolo.onnx'),
+        DeclareLaunchArgument('video_path', default_value='/ws/mecanumbot_camera/media/sample.mp4'),
         DeclareLaunchArgument('video_device', default_value='/dev/video0'),
 
         # Video file source
         Node(
-            package='ei_fetcher',
+            package='mecanumbot_camera',
             executable='video_publisher',
             name='video_pub',
             output='screen',
@@ -47,14 +48,14 @@ def generate_launch_description():
 
         # Detectors
         Node(
-            package='ei_fetcher',
+            package='mecanumbot_camera',
             executable='ball_tracker_rgb',
             name='ball_tracker_rgb',
             output='screen',
             parameters=[params]
         ),
         Node(
-            package='ei_fetcher',
+            package='mecanumbot_camera',
             executable='people_detector',
             name='people_detector',
             output='screen',
@@ -63,7 +64,7 @@ def generate_launch_description():
 
         # Fused overlay
         Node(
-            package='ei_fetcher',
+            package='mecanumbot_camera',
             executable='overlay_fused',
             name='overlay_fused',
             output='screen',

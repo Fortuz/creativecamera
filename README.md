@@ -1,6 +1,6 @@
-# CreativeCamera
+# Mecanumbot Camera
 
-Containerised ROS 2 Humble workspace for the Creative Room camera project. The stack ships the ei_fetcher package, which blends classic HSV tennis-ball tracking with an optional Ultralytics YOLO people detector that runs through ONNXRuntime.
+Containerised ROS 2 Humble workspace for the Creative Room camera project. The stack ships the mecanumbot_camera package, which blends classic HSV tennis-ball tracking with an optional Ultralytics YOLO people detector that runs through ONNXRuntime.
 
 ## Prerequisites
 - Docker Desktop with Compose v2
@@ -22,18 +22,18 @@ Containerised ROS 2 Humble workspace for the Creative Room camera project. The s
 ## Quick Start
 ```bash
 docker compose up --build -d
-docker compose exec ros2 bash -lc "source /opt/ros/humble/setup.bash && cd /ws/ros2_ws && colcon build"
-docker compose exec ros2 bash -lc "source /opt/ros/humble/setup.bash && source /ws/ros2_ws/install/setup.bash && ros2 launch ei_fetcher camera_and_detectors.launch.py"
+docker compose exec ros2 bash -lc "source /opt/ros/humble/setup.bash && cd /ws/mecanumbot_camera && colcon build"
+docker compose exec ros2 bash -lc "source /opt/ros/humble/setup.bash && source /ws/mecanumbot_camera/install/setup.bash && ros2 launch mecanumbot_camera camera_and_detectors.launch.py"
 ```
 
 ### Use a Real Camera
 ```bash
-docker compose exec ros2 bash -lc "source /opt/ros/humble/setup.bash && source /ws/ros2_ws/install/setup.bash && ros2 launch ei_fetcher camera_and_detectors.launch.py use_video:=false video_device:=/dev/video0"
+docker compose exec ros2 bash -lc "source /opt/ros/humble/setup.bash && source /ws/mecanumbot_camera/install/setup.bash && ros2 launch mecanumbot_camera camera_and_detectors.launch.py use_video:=false video_device:=/dev/video0"
 ```
 
 ### Stream a Different Video Clip
 ```bash
-docker compose exec ros2 bash -lc "source /opt/ros/humble/setup.bash && source /ws/ros2_ws/install/setup.bash && ros2 launch ei_fetcher camera_and_detectors.launch.py video_path:=/ws/ros2_ws/media/your_video.mp4"
+docker compose exec ros2 bash -lc "source /opt/ros/humble/setup.bash && source /ws/mecanumbot_camera/install/setup.bash && ros2 launch mecanumbot_camera camera_and_detectors.launch.py video_path:=/ws/mecanumbot_camera/media/your_video.mp4"
 ```
 
 ## Visualisation
@@ -45,39 +45,39 @@ docker compose exec ros2 bash -lc "source /opt/ros/humble/setup.bash && source /
   - `ros2 topic echo /detections/person`
 
 ## Configuration
-Runtime parameters live in `ros2_ws/src/ei_fetcher/config/params.yaml`:
+Runtime parameters live in `mecanumbot_camera/src/mecanumbot_camera/config/params.yaml`:
 - `ball_tracker_rgb` parameters cover HSV bounds, minimum contour area, and topic names (`debug_image_topic`, `mask_image_topic`)
 - `people_detector` expects `model_path` to point at a YOLO ONNX file; adjust `input_size`, `conf_threshold`, `iou_threshold`, and `infer_every_n` to suit your model and hardware
 
 To try one-off overrides without editing the file:
 ```bash
-ros2 run ei_fetcher ball_tracker_rgb --ros-args -p hsv_lower:="[30, 120, 120]" -p hsv_upper:="[52, 255, 255]"
+ros2 run mecanumbot_camera ball_tracker_rgb --ros-args -p hsv_lower:="[30, 120, 120]" -p hsv_upper:="[52, 255, 255]"
 ```
 
 ## Development Workflow
 1. Enter the container shell: `docker compose exec ros2 bash`
 2. Build with symlinks for faster iteration: `colcon build --symlink-install`
 3. Source the workspace overlay: `source install/setup.bash`
-4. Run nodes directly, e.g. `ros2 run ei_fetcher ball_tracker_rgb`
+4. Run nodes directly, e.g. `ros2 run mecanumbot_camera ball_tracker_rgb`
 
 Clean rebuild:
 ```bash
-rm -rf /ws/ros2_ws/build /ws/ros2_ws/install /ws/ros2_ws/log && colcon build
+rm -rf /ws/mecanumbot_camera/build /ws/mecanumbot_camera/install /ws/mecanumbot_camera/log && colcon build
 ```
 
 ## Troubleshooting
-- **Debug topics missing**: ensure `ball_tracker_rgb` started (`ros2 topic list` should include `/camera/image_debug` and `/camera/image_mask`). If not, inspect `/ws/ros2_ws/log/latest/ball_tracker_rgb-*/stderr.log`.
-- **No people detections**: set `-p model_path:=/ws/ros2_ws/models/person.onnx` (or similar) when launching so the ONNX model loads.
+- **Debug topics missing**: ensure `ball_tracker_rgb` started (`ros2 topic list` should include `/camera/image_debug` and `/camera/image_mask`). If not, inspect `/ws/mecanumbot_camera/log/latest/ball_tracker_rgb-*/stderr.log`.
+- **No people detections**: set `-p model_path:=/ws/mecanumbot_camera/models/person.onnx` (or similar) when launching so the ONNX model loads.
 - **Installing extra Python packages**: keep `numpy<2` (`numpy==1.26.4` is pre-installed for `cv_bridge` compatibility`).
 - **Foxglove cannot connect**: confirm port `8765` is exposed in `docker-compose.yml` and that the container is running `foxglove_bridge`.
 
 ## Repository Layout
 - `docker-compose.yml`: Compose service definition
 - `Dockerfile`: ROS 2 Humble base with OpenCV, ONNXRuntime, PyTorch, and Ultralytics
-- `ros2_ws/src/ei_fetcher`: Source code, launch files, and configuration
+- `mecanumbot_camera/src/mecanumbot_camera`: Source code, launch files, and configuration
 - `media/`: Demo video assets
 - `models/`: Place ONNX models here and mount into the container
 
 ## License
-MIT License. See `LICENSE` for the full text.
+Apache 2.0 License. See `LICENSE` for the full text.
 

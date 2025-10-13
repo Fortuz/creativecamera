@@ -1,11 +1,12 @@
 from setuptools import setup
 
-package_name = 'ei_fetcher'
+package_name = 'mecanumbot_camera'
 
 setup(
     name=package_name,
     version='0.1.0',
     packages=[package_name],
+    package_dir={'': 'src'},
     data_files=[
         ('share/ament_index/resource_index/packages', ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
@@ -16,16 +17,16 @@ setup(
     zip_safe=True,
     maintainer='Mugambi Timothy Mwenda, Roland Sándor Nagy',
     maintainer_email='yc8eu4@inf.elte.hu, newageson@inf.elte.hu',
-    description='CreativeCamera: tennis ball (HSV) + people (YOLO ONNX) detectors for ROS 2 Humble.',
-    license='MIT',
+    description='Mecanumbot Camera: tennis ball (HSV) + people (YOLO ONNX) detectors for ROS 2 Humble.',
+    license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'ball_tracker_rgb = ei_fetcher.ball_tracker_rgb:main',
-            'people_detector = ei_fetcher.people_detector:main',
-            'video_publisher = ei_fetcher.video_publisher:main',
-            'detection_overlay = ei_fetcher.detection_overlay:main',
-            'overlay_fused   = ei_fetcher.overlay_fused:main', 
+            'ball_tracker_rgb = mecanumbot_camera.ball_tracker_rgb:main',
+            'people_detector = mecanumbot_camera.people_detector:main',
+            'video_publisher = mecanumbot_camera.video_publisher:main',
+            'detection_overlay = mecanumbot_camera.detection_overlay:main',
+            'overlay_fused   = mecanumbot_camera.overlay_fused:main', 
         ],
     },
 )

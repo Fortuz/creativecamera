@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>ei_fetcher</name>
+  <name>mecanumbot_camera</name>
   <version>0.1.0</version>
-  <description>CreativeCamera detectors: tennis ball (HSV RGB) + people (YOLO ONNX) for ROS 2 Humble.</description>
+  <description>Mecanumbot Camera detectors: tennis ball (HSV RGB) + people (YOLO ONNX) for ROS 2 Humble.</description>
   <maintainer email="yc8eu4@inf.elte.hu">Mugambi Timothy Mwenda</maintainer>
   <maintainer email="newageson@inf.elte.hu">Roland Sándor Nagy</maintainer>
-  <license>MIT</license>
+  <license>Apache 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_python</buildtool_depend>
