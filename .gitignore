@@ -213,6 +213,10 @@ build
 
 # media
 media
+src/mecanumbot_camera/media
+
+# models
+src/mecanumbot_camera/models/yolov8n.pt
 
 # python
 __pycache__/
