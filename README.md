@@ -28,9 +28,21 @@ docker compose exec ros2 bash -lc "source /opt/ros/humble/setup.bash && source /
 ```
 
 ### Use a Real Camera
-```bash
-docker compose exec ros2 bash -lc "source /opt/ros/humble/setup.bash && source /ws/mecanumbot_camera/install/setup.bash && ros2 launch mecanumbot_camera camera_and_detectors.launch.py use_video:=false video_device:=/dev/video0"
-```
+1. **Windows + WSL**: Attach the USB webcam to the WSL VM that backs Docker Desktop.
+   ```powershell
+   usbipd wsl list
+   usbipd wsl attach --busid <BUSID>
+   ```
+   Verify `/dev/video0` exists inside WSL (`ls -l /dev/video*`).
+2. **Start the stack with the USB override** (adds `/dev/video0` to the container's device list):
+   ```bash
+   docker compose -f docker-compose.yml -f docker-compose.usb-camera.yml up --build -d
+   ```
+   (On native Linux you can skip step 1; ensure the user running Docker has access to `/dev/video0`.)
+3. **Launch with the real camera**:
+   ```bash
+   docker compose exec ros2 bash -lc "source /opt/ros/humble/setup.bash && source /ws/mecanumbot_camera/install/setup.bash && ros2 launch mecanumbot_camera camera_and_detectors.launch.py use_video:=false video_device:=/dev/video0"
+   ```
 
 ### Stream a Different Video Clip
 ```bash
@@ -78,6 +90,7 @@ rm -rf /ws/mecanumbot_camera/build /ws/mecanumbot_camera/install /ws/mecanumbot_
 
 ## Repository Layout
 - `docker-compose.yml`: Compose service definition
+- `docker-compose.usb-camera.yml`: Optional override that exposes `/dev/video0` to the container
 - `Dockerfile`: ROS 2 Humble base with OpenCV, ONNXRuntime, PyTorch, and Ultralytics
 - `mecanumbot_camera/`: ROS 2 package sources, launch files, configuration, and assets
 - `mecanumbot_camera/media/`: Demo video assets
