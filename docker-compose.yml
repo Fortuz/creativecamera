@@ -1,4 +1,5 @@
-# docker-compose.yml
+version: "3.9"
+
 services:
   ros2:
     build:
@@ -6,24 +7,29 @@ services:
       dockerfile: Dockerfile
     image: mecanumbot_camera:humble
     container_name: mecanumbot_camera_ros2
+
+    # 🟢 Use host network so ROS2 can talk to the mecanumbot over Wi-Fi
+    network_mode: host
+
     working_dir: /ws
     stdin_open: true
     tty: true
-    # Mount the current workspace under /ws
+
+    # 🧠 Mount your repo as /ws/src/mecanumbot_camera for live dev
     volumes:
-      - ./mecanumbot_camera:/ws/mecanumbot_camera
-      - ./mecanumbot_camera/models:/ws/mecanumbot_camera/models
-      - ./mecanumbot_camera/media:/ws/mecanumbot_camera/media:ro
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw   # Linux X11
+      - .:/ws/src/mecanumbot_camera
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw   # For GUI apps (rqt, image_view, etc.)
+
     environment:
-      # Adjust the domain ID if you share the network with other ROS graphs.
+      # --- ROS 2 network setup ---
       - ROS_DOMAIN_ID=0
-      # For GUI forwarding (WSLg / X11) set the display variables.
+      - ROS_LOCALHOST_ONLY=0
+
+      # --- Display / GUI support ---
       - DISPLAY=host.docker.internal:0.0
       - QT_X11_NO_MITSHM=1
       - LIBGL_ALWAYS_INDIRECT=1
-    ports:
-      - "8765:8765"
-    command: bash
 
-
+    # 🧱 Keep the container alive and source ROS env
+    entrypoint: /bin/bash
+    command: -c "source /root/.bashrc && sleep infinity"
