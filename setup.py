@@ -27,6 +27,7 @@ setup(
             'video_publisher = mecanumbot_camera.video_publisher:main',
             'detection_overlay = mecanumbot_camera.detection_overlay:main',
             'overlay_fused   = mecanumbot_camera.overlay_fused:main', 
+            'ball_follower = mecanumbot_camera.ball_follower:main',
         ],
     },
 )
